@@ -1,0 +1,15 @@
+.imgStyle {
+    @apply bg-gradient-to-r from-sky-300 to-sky-400 rounded-l-md;
+    position: relative;
+    overflow: hidden;
+}
+
+.catImg {
+    background: url('/assets/cat.png') no-repeat;
+    position: absolute;
+    bottom: 0; left: 0; right: 0; top: 0;
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    background-position: 50% 47px;
+}
