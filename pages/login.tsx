@@ -9,8 +9,19 @@ import Image from "next/image";
 import { HiAtSymbol, HiEye, HiEyeOff } from "react-icons/hi";
 import { useState } from "react";
 
+import { signIn} from "next-auth/react"
+
 export default function Login() {
   const [show, setShow] = useState(false);
+
+
+  // Google Handler
+  async function handleGoogleSignin() {
+    signIn('google', {callbackUrl: "http://localhost:3000"})
+  }
+
+
+
   return (
     <Layout>
       <Head>
@@ -47,11 +58,11 @@ export default function Login() {
               {show ? <HiEye size={20} /> : <HiEyeOff size={20} />}
             </span>
           </div>
-          <div className={styles.button}>
-            <button type="submit">Login</button>
+          <div >
+            <button type="submit" className={styles.button}>Login</button>
           </div>
           <div>
-            <button type="button" className={styles.button_provider}>
+            <button type="button" onClick={handleGoogleSignin} className={styles.button_provider}>
               Sign in with Google{" "}
               <Image
                 src={"/assets/google.svg"}

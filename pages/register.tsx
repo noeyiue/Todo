@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Layout from "../layout/layout";
 import Link from "next/link";
-// import { useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import styles from "../styles/Form.module.css";
 
@@ -10,6 +10,15 @@ import { useState } from "react";
 
 export default function Register() {
   const [show, setShow] = useState({password: false, cpassword: false});
+  const {register, handleSubmit, formState: {errors}} = useForm({defaultValues: {
+    Username: "",
+    email: "",
+    password: "",
+    cpassword: ""
+  }});
+
+  console.log(errors);
+
   return (
     <Layout>
       <Head>
@@ -19,33 +28,37 @@ export default function Register() {
         <div className="title">
           <h1 className="text-gray-800 text-4xl font-bold ">Register</h1>
         </div>
-        <form className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit((data) => {
+          console.log(data);
+        })} className="flex flex-col gap-5">
           <div className={styles.input_group}>
             <input
               type="text"
-              name="Username"
+              {...register("Username", {required: 'Required.'})}
               placeholder="Username"
               className={styles.input_text}
             />
             <span className="icon flex items-center px-3 ">
+              <p>{errors.Username?.message}</p>
               <HiUser size={20} />
             </span>
           </div>
           <div className={styles.input_group}>
             <input
               type="email"
-              name="email"
+              {...register("email", {required: 'Required.'})}
               placeholder="Email"
               className={styles.input_text}
             />
             <span className="icon flex items-center px-3 ">
+              <p>{errors.email?.message}</p>
               <HiAtSymbol size={20} />
             </span>
           </div>
           <div className={styles.input_group}>
             <input
               type={`${show.password ? "text" : "password"}`}
-              name="password"
+              {...register("password", {required: 'Required.'})}
               placeholder="Password"
               className={styles.input_text}
             />
@@ -53,13 +66,14 @@ export default function Register() {
               className="icon flex items-center px-3"
               onClick={() => setShow({...show, password: !show.password})}
             >
+              <p>{errors.password?.message}</p>
               {show.password ? <HiEye size={20} /> : <HiEyeOff size={20} />}
             </span>
           </div>
           <div className={styles.input_group}>
             <input
               type={`${show.cpassword ? "text" : "password"}`}
-              name="cpassword"
+              {...register("cpassword", {required: 'Required.'})}
               placeholder="Confirm Password"
               className={styles.input_text}
             />
@@ -67,11 +81,12 @@ export default function Register() {
               className="icon flex items-center px-3"
               onClick={() => setShow({...show, cpassword: !show.cpassword})}
             >
+              <p>{errors.cpassword?.message}</p>
               {show.cpassword ? <HiEye size={20} /> : <HiEyeOff size={20} />}
             </span>
           </div>
-          <div className={styles.button}>
-            <button type="submit">Login</button>
+          <div>
+            <button type="submit" className={styles.button}>Sign Up</button>
           </div>
          
         </form>
