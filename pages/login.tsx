@@ -10,7 +10,7 @@ import { HiAtSymbol, HiEye, HiEyeOff } from "react-icons/hi";
 import { useState } from "react";
 
 import { signIn } from "next-auth/react";
-import handleLogin from "./api/handleLogin";
+
 import { useRouter } from "next/router";
 
 
@@ -50,12 +50,20 @@ export default function Login() {
         </div>
         <form
           onSubmit={handleSubmit(async (data) => {
-            const result = await handleLogin(data);
-            setError(result);
-            if (!result) {
-              console.log("You can Login");
-              router.push("");
-            }
+
+              const result = await signIn("credentials", {
+                email: data.email,
+                password: data.password,
+                redirect: false, 
+              });
+              console.log(result);
+              if (result?.status == 200) {
+                router.push("/");
+              }
+              else {
+                setError(true);
+              }
+            
           })}
           className="flex flex-col gap-5"
         >

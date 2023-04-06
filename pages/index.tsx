@@ -82,6 +82,8 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
   return (
     <>
     <div className="mx-auto max-w-md max-h-md shadow-2xl place-items-center w-3/4  p-7 rounded-lg bg-white">
+      <h1>{session.user?.email}</h1>
+
         <h1 className="font-bold mb-4 text-4xl">
           <FontAwesomeIcon icon={icon({ name: "list" })} /> Todo List{" "}
         </h1>
