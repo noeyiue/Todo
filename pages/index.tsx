@@ -50,7 +50,7 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
 
   useEffect(() => {
     handleGetTodo();
-  }, []);
+  }, [tasks]);
 
   async function handleGetTodo() {
     // const options = {

@@ -40,7 +40,6 @@ export default async function handleRegister(data: regis_data) {
         error.message.includes("unique constraint")
       ) {
         console.log("Email or username already exists.");
-        // handle uniqueness violation error here
         return true;
       }
     }

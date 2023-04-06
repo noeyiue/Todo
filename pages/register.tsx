@@ -53,16 +53,16 @@ export default function Register() {
           <p className="w-3/4 mx-auto text-gray-400">Todo App with CRUD.</p>
         </div>
         <form
-          onSubmit={handleSubmit((data) => {
+          onSubmit={handleSubmit(async (data) => {
             data.password = hash(data.password);
             console.log(data);
-            const result = handleRegister(data);
+            const result = await handleRegister(data);
+            console.log(result);
+            setError(!!result);
             if (!result) {
-              setError(result);
-            }
-            else {
               router.push("login");
             }
+
           })}
           className="flex flex-col gap-4"
         >

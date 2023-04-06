@@ -10,11 +10,16 @@ import { HiAtSymbol, HiEye, HiEyeOff } from "react-icons/hi";
 import { useState } from "react";
 
 import { signIn } from "next-auth/react";
+import handleLogin from "./api/handleLogin";
+import { useRouter } from "next/router";
 
 
 
 export default function Login() {
   const [show, setShow] = useState<boolean>(false);
+  const [error, setError] = useState(false);
+
+  const router = useRouter();
 
   // Google Handler
   async function handleGoogleSignin() {
@@ -28,7 +33,7 @@ export default function Login() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -44,20 +49,25 @@ export default function Login() {
           <p className="w-3/4 mx-auto text-gray-400">Todo App with CRUD.</p>
         </div>
         <form
-          onSubmit={handleSubmit((data) => {
-            console.log(data);
+          onSubmit={handleSubmit(async (data) => {
+            const result = await handleLogin(data);
+            setError(result);
+            if (!result) {
+              console.log("You can Login");
+              router.push("");
+            }
           })}
           className="flex flex-col gap-5"
         >
           <div className={styles.input_group}>
             <input
               type="email"
-              {...register("username", { required: "Required" })}
+              {...register("email", { required: "Required" })}
               placeholder="Email"
               className={styles.input_text}
             />
             <span className="icon flex items-center px-3 ">
-              <p>{errors.username?.message}</p>
+              <p>{errors.email?.message}</p>
               <HiAtSymbol size={20} />
             </span>
           </div>
@@ -76,6 +86,7 @@ export default function Login() {
               {show ? <HiEye size={20} /> : <HiEyeOff size={20} />}
             </span>
           </div>
+          {error && <p className="text-indigo-500">Wrong email or username.</p>}
           <div>
             <button type="submit" className={styles.button}>
               Login

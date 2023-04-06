@@ -1,7 +1,12 @@
 import { login_data } from "@/layout/type";
 
 
-export default async function handleRegister(data: login_data) {
+export default async function handleLogin(data: login_data) {
+  const { createHash } = require('crypto');
+  function hash(string: string) {
+    return createHash('sha256').update(string).digest('hex');
+  }
+  //get password
     const options = {
         headers: {
           "x-hasura-admin-secret":
@@ -9,7 +14,14 @@ export default async function handleRegister(data: login_data) {
         },
         method: "POST",
         body: JSON.stringify({
-          query: ``,
+          query: `query getPassword($email: String!) {
+            user_by_pk(email: $email) {
+              password
+            }
+          }`,
+          variables: {
+            email: data.email
+          }
         }),
       };
     
@@ -18,22 +30,16 @@ export default async function handleRegister(data: login_data) {
         options
       );
       const responseJson = await response.json();
-      if (responseJson.errors) {
-        for (let i = 0; i < responseJson.errors.length; i++) {
-          const error = responseJson.errors[i];
-          if (
-            error.extensions &&
-            error.extensions.code === "constraint-violation" &&
-            error.message.includes("unique constraint")
-          ) {
-            console.log("Email or username already exists.");
-            // handle uniqueness violation error here
-            return true;
-          }
-        }
-        console.log(responseJson.errors);
+      console.log(responseJson);
+      if (responseJson.data.user_by_pk == null) {
+        return true;
       } else {
-        console.log(responseJson.data);
-        return false;
+        const input_pass: String = hash(data.password);
+        const true_pass: String = responseJson.data.user_by_pk.password;
+        if (input_pass == true_pass) {
+          return false;
+        } else {
+          return true;
+        }
       }
 }

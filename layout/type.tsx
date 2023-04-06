@@ -1,5 +1,5 @@
 export type login_data = {
-    username: string;
+    email: string;
     password: string;
 };
 
