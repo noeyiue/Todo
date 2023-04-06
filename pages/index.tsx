@@ -8,6 +8,8 @@ import { icon } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 import { useSession, getSession, signOut } from "next-auth/react";
 import { Session } from "next-auth";
+import handleGetTodo from "./api/handleGetTodo";
+import handleAddTask from "./api/handleAddTask";
 
 
 
@@ -43,47 +45,32 @@ function Guest() {
   );
 }
 
+
 //For Authorized User
 function User({ session, handleSignOut }: { session: Session, handleSignOut: () => Promise<void> }) {
   const [tasks, setTasks] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState("");
 
+
   useEffect(() => {
-    handleGetTodo();
+
+    getTodo();
   }, [tasks]);
 
-  async function handleGetTodo() {
-    // const options = {
-    //   headers: {
-    //     "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWFsbG93ZWQtcm9sZXMiOlsidXNlciIsImFkbWluIl0sIngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6InVzZXIiLCJ4LWhhc3VyYS11c2VyLWlkIjoidXNlcjEifX0.aWJMoctQ7-a8JiZd4oMjo0KdPIeohLmjAWIQFDiTwUY"
-    //   },
-    //   method: "POST",
-    //   body: JSON.stringify({
-    //     query: `query fetchAllTasks {
-    //       todos {
-    //         isFinish
-    //         task_id
-    //         todo_task
-    //         user_id
-    //       }
-    //     }`,
-    //     opretionName: "fetchAllTask",
-    //   }),
-    // };
-    // const fetchResponse = await fetch(
-    //   "https://enhanced-chicken-26.hasura.app/v1/graphql",
-    //   options
-    // );
-    // const responseJson = await fetchResponse.json();
-    // setTasks(responseJson.data.todos);
-    // console.log(tasks);
+  async function getTodo() {
+    const data = await handleGetTodo(session.user.email);
+    setTasks(data);
   }
+  
+  const handleInputChange = (event: any) => {
+    setInputValue(event.target.value);
+  };
+  
 
   return (
     <>
     <div className="mx-auto max-w-md max-h-md shadow-2xl place-items-center w-3/4  p-7 rounded-lg bg-white">
       <h1>{session.user?.email}</h1>
-
         <h1 className="font-bold mb-4 text-4xl">
           <FontAwesomeIcon icon={icon({ name: "list" })} /> Todo List{" "}
         </h1>
@@ -93,11 +80,14 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
             type="text"
             placeholder="Enter your TODO item"
             value={inputValue}
-            // onChange={handleInputChange}
+            onChange={handleInputChange}
           />
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded"
-            // onClick={handleAddTodo}
+            onClick={ async () => {
+              const result = await handleAddTask(session.user.email, inputValue);
+              setInputValue("");
+            }}
           >
             <FontAwesomeIcon
               icon={icon({ name: "circle-plus" })}
@@ -112,7 +102,7 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
             .filter((task) => task.isFinish === false)
             .map((task) => (
               <li
-                key={task.id}
+                key={task.taskID}
                 className="flex justify-between items-center mb-2"
               >
                 {!task.isEdit && (
@@ -121,9 +111,9 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
                       type="checkbox"
                       checked={task.isFinish}
                       className="form-checkbox mb-2 mx-1 text-blue-600"
-                      // onChange={() => handleFinish(task.id, task.isFinish)}
+                      // onChange={() => handleFinish(task.taskID, task.isFinish)}
                     />
-                    {task.todo_task}
+                    {task.task}
                   </div>
                 )}
                 {task.isEdit && (
@@ -138,7 +128,7 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
                   {!task.isEdit && (
                     <button
                       className="bg-green-500 hover:bg-green-700 text-white font-bold px-2 py-1 mx-1 rounded"
-                      // onClick={() => handleEdit(task.id)}
+                      // onClick={() => handleEdit(task.taskID)}
                     >
                       <FontAwesomeIcon
                         icon={icon({ name: "pen-to-square" })}
@@ -151,7 +141,7 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
                     <button
                       className="bg-green-500 hover:bg-green-700 text-white font-bold px-2 py-1 mx-1 rounded"
                       onClick={(event) => {
-                        // updateTask(task.id, editText);
+                        // updateTask(task.taskID, editText);
                       }}
                     >
                       <FontAwesomeIcon
@@ -163,7 +153,7 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
                   )}
                   <button
                     className="bg-red-500 hover:bg-red-700 text-white font-bold px-2 py-1 rounded"
-                    // onClick={() => handleDelete(task.id)}
+                    // onClick={() => handleDelete(task.taskID)}
                   >
                     <FontAwesomeIcon icon={icon({ name: "trash" })} />
                   </button>
@@ -182,7 +172,7 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
             .filter((task) => task.isFinish === true)
             .map((task) => (
               <li
-                key={task.id}
+                key={task.taskID}
                 className="flex justify-between items-center mb-2"
               >
                 <div className="line-through">
@@ -190,14 +180,14 @@ function User({ session, handleSignOut }: { session: Session, handleSignOut: () 
                     type="checkbox"
                     checked={task.isFinish}
                     className="form-checkbox mb-2 mx-1 text-blue-600"
-                    // onChange={() => handleFinish(task.id, task.isFinish)}
+                    // onChange={() => handleFinish(task.taskID, task.isFinish)}
                   />
-                  {task.Task}
+                  {task.task}
                 </div>
 
                 <button
                   className="bg-red-500 hover:bg-red-700 text-white font-bold px-2 py-1 rounded"
-                  // onClick={() => handleDelete(task.id)}
+                  // onClick={() => handleDelete(task.taskID)}
                 >
                   <FontAwesomeIcon icon={icon({ name: "trash" })} />
                 </button>
