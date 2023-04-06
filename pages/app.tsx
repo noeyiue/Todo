@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { icon } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 export default function App() {
+  
   const [inputValue, setInputValue] = useState("");
   const [tasks, setTasks] = useState<any[]>([]);
   const [editText, setEditText] = useState("");
@@ -11,17 +12,17 @@ export default function App() {
   async function getAllTodo() {
     const options = {
       headers: {
-        "x-hasura-admin-secret":
-          "Yd76CQA8cgXTe1vc5bRXhnLJxGaamQtwZy8aHPUctmqXQKdI7DWs9pNDAo6EBeFB",
+        "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWFsbG93ZWQtcm9sZXMiOlsidXNlciIsImFkbWluIl0sIngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6InVzZXIiLCJ4LWhhc3VyYS11c2VyLWlkIjoidXNlcjEifX0.aWJMoctQ7-a8JiZd4oMjo0KdPIeohLmjAWIQFDiTwUY"
       },
       method: "POST",
       body: JSON.stringify({
-        query: `query fetchAllTask {
-          TodoTask(order_by: {id: asc}) {
-            Task
-            id
-            isEdit
+        query: `query fetchAllTasks {
+          todos {
             isFinish
+            task_id
+            todo_task
+            user_id
+            isEdit
           }
         }`,
         opretionName: "fetchAllTask",
@@ -32,7 +33,7 @@ export default function App() {
       options
     );
     const responseJson = await fetchResponse.json();
-    setTasks(responseJson.data.TodoTask);
+    setTasks(responseJson.data.todos);
   }
 
   async function addTodo(inputValue: string) {
@@ -62,7 +63,7 @@ export default function App() {
       options
     );
     const responseJson = await response.json();
-    const newTask = responseJson.data.insert_TodoTask.returning[0];
+    const newTask = responseJson.data.insert_TodoTasks.returning[0];
     getAllTodo();
     setInputValue("");
   }
@@ -76,7 +77,7 @@ export default function App() {
       method: "POST",
       body: JSON.stringify({
         query: `mutation deleteTask($id: Int!) {
-          delete_TodoTask_by_pk(id: $id) {
+          delete_TodoTasks_by_pk(id: $id) {
             id
             Task
             isEdit
@@ -107,7 +108,7 @@ export default function App() {
       method: "POST",
       body: JSON.stringify({
         query: `mutation updateFinishTask($id: Int!, $isFinish: Boolean!) {
-          update_TodoTask_by_pk(pk_columns: {id: $id}, _set: {isFinish: $isFinish}) {
+          update_TodoTasks_by_pk(pk_columns: {id: $id}, _set: {isFinish: $isFinish}) {
             id
             isFinish
           }
@@ -191,7 +192,7 @@ export default function App() {
       <Head>
         <title>Todo App</title>
       </Head>
-      <div className="mx-auto max-w-md max-h-md shadow-2xl ... place-items-center w-3/4  p-7 rounded-lg bg-white">
+      <div className="mx-auto max-w-md max-h-md shadow-2xl place-items-center w-3/4  p-7 rounded-lg bg-white">
         <h1 className="font-bold mb-4 text-4xl">
           <FontAwesomeIcon icon={icon({ name: "list" })} /> Todo List{" "}
         </h1>
@@ -231,7 +232,7 @@ export default function App() {
                       className="form-checkbox mb-2 mx-1 text-blue-600"
                       onChange={() => handleFinish(task.id, task.isFinish)}
                     />
-                    {task.Task}
+                    {task.todo_task}
                   </div>
                 )}
                 {task.isEdit && (

@@ -6,8 +6,8 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
     return (
-        <div className="flex h-screen bg-gradient-to-r from-sky-500 to-indigo-500 ">
-            <div className="m-auto bg-slate-50 rounded-md w-3/5 h-3/4 grid lg:grid-cols-2">
+        <div className="flex h-screen bg-blue-100">
+            <div className="m-auto bg-slate-100 rounded-md w-3/5 h-3/4 grid lg:grid-cols-2 drop-shadow-lg ">
                 <div className={styles.imgStyle}>
                     <div className={styles.catImg}></div>
                 </div>

@@ -18,14 +18,14 @@
     color: #6366f1;
 }
 
-.input_text:not([type=email]) ~ span:hover *{
+.input_text:is([type=password]) ~ span:hover *{
     color: #6366f1;
     cursor: pointer;
 }
 
 .button {
     @apply w-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-md;
-    @apply py-1 text-gray-50 text-lg;
+    @apply py-1 text-gray-50 border text-lg;
 }
 
 .button:hover {
