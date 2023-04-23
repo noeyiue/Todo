@@ -1,7 +1,8 @@
 import { regis_data } from "@/layout/type";
 
 
-export default async function handleRegister(data: regis_data) {
+
+export default async function handleRegister(data: regis_data, provider: String) {
   const options = {
     headers: {
       "x-hasura-admin-secret":
@@ -9,8 +10,8 @@ export default async function handleRegister(data: regis_data) {
     },
     method: "POST",
     body: JSON.stringify({
-      query: `mutation regisNewUser($email: String!, $password: String!, $username: String!) {
-        insert_user(objects: {email: $email, password: $password, username: $username}) {
+      query: `mutation regisNewUser($email: String!, $password: String!, $username: String!, $provider: String!) {
+        insert_user(objects: {email: $email, password: $password, username: $username, provider: $provider}) {
           returning {
             username
             userID
@@ -22,6 +23,7 @@ export default async function handleRegister(data: regis_data) {
         "email": data.email,
         "password": data.password,
         "username": data.username,
+        "provider": provider
       },
     }),
   };
@@ -31,6 +33,7 @@ export default async function handleRegister(data: regis_data) {
     options
   );
   const responseJson = await response.json();
+  console.log(responseJson);
   if (responseJson.errors) {
     for (let i = 0; i < responseJson.errors.length; i++) {
       const error = responseJson.errors[i];
@@ -45,7 +48,7 @@ export default async function handleRegister(data: regis_data) {
     }
     console.log(responseJson.errors);
   } else {
-    console.log(responseJson.data);
+    
     return false;
   }
 }

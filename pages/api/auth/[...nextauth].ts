@@ -16,7 +16,7 @@ export default NextAuth({
       name: "Credentials",
       async authorize(credentials, req) {
         // Implement your own authorization logic here
-        const { email, password } = credentials;
+        const { email , password } = credentials;
 
         const result = await handleLogin(email, password);
         console.log(result);

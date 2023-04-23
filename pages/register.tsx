@@ -3,7 +3,6 @@ import Layout from "../layout/layout";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 
-
 import styles from "../styles/Form.module.css";
 
 import { HiAtSymbol, HiEye, HiEyeOff, HiUser } from "react-icons/hi";
@@ -38,7 +37,7 @@ export default function Register() {
   });
 
   const password = watch("password");
-  const cpassword = watch("cpassword");
+  watch("cpassword");
 
   console.log(errors);
 
@@ -56,11 +55,11 @@ export default function Register() {
           onSubmit={handleSubmit(async (data) => {
             data.password = hash(data.password);
             console.log(data);
-            const result = await handleRegister(data);
+            const result = await handleRegister(data,"credential");
             console.log(result);
             setError(!!result);
             if (!result) {
-              router.push("login");
+              await router.push("login");
             }
 
           })}

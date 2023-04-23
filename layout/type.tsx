@@ -4,8 +4,22 @@ export type login_data = {
 };
 
 export type regis_data = {
-    username: string;
+    username: string | null;
     email: string;
-    password: string;
-    cpassword: string;
+    password: string | null;
+    cpassword: string | null;
   };
+
+export type user_data = {
+    username: string;
+    userID: string;
+    email: string
+}
+
+export type todos_data = {
+    isEdit: boolean;
+    isFinish: boolean;
+    task: string;
+    taskID: string;
+    userID: string;
+}

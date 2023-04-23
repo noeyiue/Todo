@@ -1,6 +1,6 @@
 import getJWT from "./getJWT";
 
-export default async function handleAddTask(userID: string, input: string) {
+export default async function handleFinish(userID: string, taskID: string, isFinish: boolean) {
   const user_jwt = await getJWT(userID);
   const options = {
     headers: {
@@ -8,20 +8,15 @@ export default async function handleAddTask(userID: string, input: string) {
     },
     method: "POST",
     body: JSON.stringify({
-      query: `mutation addNewTask($task: String!, $userID: String!) {
-            insert_todos(objects: {task: $task, userID: $userID}) {
-                returning {
-                    isEdit
-                    isFinish
-                    task
-                    taskID
-                    userID
-                }
-            }
+      query: `mutation updateFinishTask($userID: String!, $taskID: uuid!, $isFinish: Boolean!) {
+        update_todos_by_pk(pk_columns: {userID: $userID, taskID: $taskID}, _set: {isFinish: $isFinish}) {
+            isFinish
+          }
         }`,
       variables: {
-        task: input,
-        userID: userID
+        userID: userID, 
+        taskID: taskID, 
+        isFinish: !isFinish
       },
     }),
   };
@@ -30,13 +25,13 @@ export default async function handleAddTask(userID: string, input: string) {
     options
   );
   const responseJson = await fetchResponse.json();
-  // console.log(responseJson);
-
   if (responseJson.errors) {
     console.log(responseJson);
     throw new Error('Something wrong');
   }
   else {
+    console.log(responseJson.data);
     return responseJson.data;
   }
 }
+

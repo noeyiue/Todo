@@ -1,7 +1,7 @@
 import getJWT from "./getJWT";
 
-export default async function handleGetTodo(email: string) {
-  const user_jwt = await getJWT(email);
+export default async function handleGetTodo(userID: string) {
+  const user_jwt = await getJWT(userID);
   const options = {
     headers: {
       Authorization:
@@ -15,7 +15,7 @@ export default async function handleGetTodo(email: string) {
                 isFinish
                 task
                 taskID
-                userEmail
+                userID
             }
           }`,
       opretionName: "fetchAllTask",
@@ -26,5 +26,12 @@ export default async function handleGetTodo(email: string) {
     options
   );
   const responseJson = await fetchResponse.json();
-  return responseJson.data.todos;
+  // console.log(responseJson);
+  if (responseJson.errors) {
+    console.log(responseJson);
+    throw new Error('Something wrong');
+  }
+  else {
+    return responseJson.data.todos;
+  }
 }
